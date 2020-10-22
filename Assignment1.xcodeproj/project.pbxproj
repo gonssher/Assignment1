@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		582F5258253D98E80057A646 /* RouteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582F5257253D98E80057A646 /* RouteViewController.swift */; };
+		589DAD3225422B8700E1FF13 /* CarImage.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 589DAD3125422B8700E1FF13 /* CarImage.jpeg */; };
 		58F03612253A723F00D87B48 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F03611253A723F00D87B48 /* AppDelegate.swift */; };
 		58F03614253A723F00D87B48 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F03613253A723F00D87B48 /* SceneDelegate.swift */; };
 		58F03616253A723F00D87B48 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F03615253A723F00D87B48 /* MapViewController.swift */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		582F5257253D98E80057A646 /* RouteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteViewController.swift; sourceTree = "<group>"; };
+		589DAD3125422B8700E1FF13 /* CarImage.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = CarImage.jpeg; sourceTree = "<group>"; };
 		58F0360E253A723F00D87B48 /* Assignment1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Assignment1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58F03611253A723F00D87B48 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		58F03613253A723F00D87B48 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 		58F03610253A723F00D87B48 /* Assignment1 */ = {
 			isa = PBXGroup;
 			children = (
+				589DAD3125422B8700E1FF13 /* CarImage.jpeg */,
 				58F03611253A723F00D87B48 /* AppDelegate.swift */,
 				58F03613253A723F00D87B48 /* SceneDelegate.swift */,
 				58F03615253A723F00D87B48 /* MapViewController.swift */,
@@ -239,6 +242,7 @@
 			files = (
 				58F03621253A724100D87B48 /* LaunchScreen.storyboard in Resources */,
 				58F0361E253A724100D87B48 /* Assets.xcassets in Resources */,
+				589DAD3225422B8700E1FF13 /* CarImage.jpeg in Resources */,
 				58F03619253A723F00D87B48 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

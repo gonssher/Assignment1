@@ -13,9 +13,16 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
 
     @IBOutlet weak var mapView : MKMapView!
     @IBOutlet weak var segmentValue : UISegmentedControl!
+    
     var locationManager = CLLocationManager()
-    var datatogo = ""
-
+    
+    // MARK: - Declarations which are used for passing data to the next controller
+    
+    var routes = [""]
+    var fromlocation : String = ""
+    var toLocation : String = ""
+    var selectedIndex : Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewWillAppear()
@@ -35,7 +42,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
     }
     
     // MARK: - Function to draw the route on the mapview controller with data from routeview controller
-    func routedraw(sender: RouteViewController, selectedTableValue: Int, fromCorrdinate: CLLocationCoordinate2D, toCorrdinate: CLLocationCoordinate2D, allRoutes: [String]) {
+    func routedraw(sender: RouteViewController, selectedTableValue: Int, fromCorrdinate: CLLocationCoordinate2D, toCorrdinate: CLLocationCoordinate2D, allRoutes: [String],from: String, to: String) {
+        
+        let routesToGo = allRoutes
+        routes = routesToGo
+        let fromToGo = from
+        fromlocation = fromToGo
+        let toGo = to
+        toLocation = toGo
+        let selectedValue = selectedTableValue
+        selectedIndex = selectedValue
+        
         
         let request = MKDirections.Request()
         let fromPlacemark = MKPlacemark(coordinate: fromCorrdinate )
@@ -44,8 +61,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
         request.destination = MKMapItem(placemark: toPlacemark)
         request.transportType = .automobile
         request.requestsAlternateRoutes = true
-
-       // Mark: - Removing overlays if any existed for annotations and maps
+        
+        // MARK: - Removing overlays if any existed for annotations and maps
         
         let overlays = self.mapView.overlays
         mapView.removeOverlays(overlays)
@@ -56,16 +73,22 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
         directions.calculate(completionHandler: { [self] (response, error) in
             if let err = error
             {
-                print("[ERROR] " + err.localizedDescription)
+               // print("[ERROR] " + err.localizedDescription)
+                
+                let alertController = UIAlertController(title: "Error", message: "No directions Available please try again", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "ok", style: .cancel, handler: nil)
+                alertController.addAction(okAction)
+                present(alertController,animated: true)
+                
                 return
             }
             
-           if let routes = response?.routes[selectedTableValue]
+            if let routes = response?.routes[selectedTableValue]
             {
-           
+                
                 print("selected route : \(routes.name)")
                 print("Table index value : \(selectedTableValue)")
-            
+                
                 self.mapView.addOverlay(routes.polyline,level:MKOverlayLevel.aboveRoads)
                 self.mapView.setVisibleMapRect(routes.polyline.boundingMapRect, animated:true)
             }
@@ -75,11 +98,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
         
         {
             print("Annotation not needed as location is current location")
+            
             let anot = MKPointAnnotation()
             anot.coordinate = toCorrdinate
-            anot.title = "Sheridan College Trafalgar"
+            anot.title = to
             mapView.addAnnotation(anot)
-            print(allRoutes)
+            
+      //      print("All passed Routes \(allRoutes)")
         }
         
         else
@@ -89,12 +114,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = fromCorrdinate
-            annotation.title = "\(fromCorrdinate)"
+            annotation.title = from
             mapView.addAnnotation(annotation)
-     
-            let anot = MKPointAnnotation()
-            anot.coordinate = toCorrdinate
-            mapView.addAnnotation(anot)
+            
+            let toAnnotation = MKPointAnnotation()
+            toAnnotation.coordinate = toCorrdinate
+            toAnnotation.title = to
+            mapView.addAnnotation(toAnnotation)
             
             locationManager.stopUpdatingLocation()
             mapView.showsUserLocation = false
@@ -105,33 +131,33 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
     
     // MARK: - will get your current location
     func getMyCurrrentLocation() {
-    
+        
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestAlwaysAuthorization()
-
+        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
-       
+            
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-       
-         let finlocation:CLLocation = locations[0] as CLLocation
-         let center = CLLocationCoordinate2D(latitude: finlocation.coordinate.latitude, longitude: finlocation.coordinate.longitude)
-         let mRegion = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-
-           mapView.setRegion(mRegion, animated: true)
-           mapView.showsUserLocation = true
-
-     }
+        
+        let finlocation:CLLocation = locations[0] as CLLocation
+        let center = CLLocationCoordinate2D(latitude: finlocation.coordinate.latitude, longitude: finlocation.coordinate.longitude)
+        let mRegion = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        
+        mapView.setRegion(mRegion, animated: true)
+        mapView.showsUserLocation = true
+        
+    }
     
-    // MARK: - Used to send data to controller
+    // MARK: - Used to send data to another controller
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-          //Mark : Preparing to Send Current Location of User
-                  
+        //Mark : Preparing to Send Current Location of User
+        
         if segue.identifier == "MainToRoute"
         {
             if let vc = segue.destination as? RouteViewController
@@ -140,12 +166,18 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
                 
                 vc.delegate = self
                 vc.locationData = locationManager
- 
+                vc.manageRoutes = routes
+                vc.fromlocation = fromlocation
+                vc.toLocation = toLocation
+                vc.selectedIndex = selectedIndex
+                
+                
+                
             }
         }
-          
-    
-      }
+        
+        
+    }
     
     
     // MARK: - Used to draw map overlay
@@ -160,13 +192,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
             return renderer
         }
         //routeView(fromCorrdinate: newlocationFromPlacemark, toCorrdinate: newFromLocationPlacemark)
-           
+        
         // otherwise, overlay renderer
         return MKOverlayRenderer(overlay:overlay)
     }
-
+    
+    
+    ///MARK: -BONUSES
+    
+    // MARK: - Used to switch Map Type
     @IBAction func segmentControlChange (sender: UISegmentedControl!) {
-       
+        
         if (sender.selectedSegmentIndex == 0 )
         {
             mapView.mapType = MKMapType.standard
@@ -182,7 +218,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
         }
     }
     
-    //BONUS
+    
     
     
     // MARK: - Used to show compass on top right of the map
@@ -214,6 +250,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate , MKMapViewD
         mapView.addSubview(scale)
     }
     
-
+    
 }
 
